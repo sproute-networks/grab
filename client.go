@@ -312,7 +312,13 @@ func (c *Client) do(req *Request) (*Response, error) {
 	if err != nil {
 		return resp, resp.close(err)
 	}
-	resp.writer = f
+
+	fn := req.NewWriterFunc
+	if fn == nil {
+		resp.writer = f
+	} else {
+		resp.writer = fn(f)
+	}
 
 	// seek to the start of the file
 	if _, err := f.Seek(0, 0); err != nil {

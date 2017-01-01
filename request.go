@@ -7,6 +7,7 @@ import (
 	"crypto/sha512"
 	"fmt"
 	"hash"
+	"io"
 	"net/http"
 	"net/url"
 )
@@ -71,6 +72,12 @@ type Request struct {
 	// NotifyOnClose specifies a channel that will notified when the requested
 	// transfer is completed, either successfully or with an error.
 	NotifyOnClose chan<- *Response
+
+	// NewWriterFunc is an optional function that allows the user to
+	// wrap their own writer around the file writer created by
+	// grab. This can be used, for instance, to limit the rate at
+	// which the file is downloaded.
+	NewWriterFunc func (io.WriteCloser) io.WriteCloser
 
 	// notifyOnCloseInternal is the same as NotifyOnClose but for private
 	// internal use.
